@@ -6,6 +6,7 @@ External Linter To IDE Inspection Connector Plugin for IntelliJ Platform-based I
 Support Tools:
 
 - flake8
+- pylint
 - mypy
 
 Limitations:
