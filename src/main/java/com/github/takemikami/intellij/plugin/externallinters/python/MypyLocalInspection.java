@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class MypyLocalInspection extends LocalInspectionTool {
     private static final Logger LOG = Logger.getInstance(MypyLocalInspection.class);
 
-    Pattern OUTPUT_PATTERN = Pattern.compile("([^:]*):([^:]*):([^:]*):\\s*([A-Z0-9]*)\\s*(.*)");
+    Pattern OUTPUT_PATTERN = Pattern.compile("([^:]*):([^:]*):([^:]*)\\s*([^:]*):\\s*(.*)");
 
     @NotNull
     @Override
