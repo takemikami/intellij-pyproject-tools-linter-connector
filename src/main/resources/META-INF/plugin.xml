@@ -1,0 +1,32 @@
+<idea-plugin>
+    <id>com.github.takemikami.intellij-plugin-external-linters</id>
+    <name>External Linters</name>
+    <vendor url="https://takemikami.com/">takemikami.com</vendor>
+
+    <description><![CDATA[
+    External Linters
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Python -->
+        <localInspection language="Python"
+                         displayName="flake8"
+                         groupName="ExternalLinters"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.Flake8LocalInspection"/>
+        <localInspection language="Python"
+                         displayName="mypy"
+                         groupName="ExternalLinters"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.MypyLocalInspection"/>
+    </extensions>
+
+    <actions>
+    </actions>
+</idea-plugin>
