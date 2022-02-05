@@ -10,7 +10,7 @@ Support Tools:
 
 Limitations:
 
-- run on unix-bases systems only. (not support windows)
+- run on Unix-based systems only. (not support windows)
 - run on local interpreter only. (not support remote interpreter)
 
 ## Install
@@ -18,7 +18,7 @@ Limitations:
 Build plugin distribution.
 
 ```sh
-./gradlew bludPlugin
+./gradlew buildPlugin
 ```
 
 Install plugin.
