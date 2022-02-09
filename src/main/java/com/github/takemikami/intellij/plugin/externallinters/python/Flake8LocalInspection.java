@@ -5,7 +5,7 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
@@ -25,20 +25,21 @@ public class Flake8LocalInspection extends LocalInspectionTool {
     @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-        final String flake8bin = PythonInspectionUtil.getPythonCommandBin(
-                ProjectRootManager.getInstance(holder.getProject()).getProjectSdk(),
-                "flake8");
-        if (flake8bin == null) {
-            return super.buildVisitor(holder, isOnTheFly);
-        }
 
         return new PsiElementVisitor() {
             @Override
             public void visitFile(@NotNull PsiFile file) {
                 super.visitFile(file);
+                Sdk sdk = PythonInspectionUtil.getSdkFromFile(file);
+                final String flake8bin = PythonInspectionUtil.getPythonCommandBin(sdk, "flake8");
+                System.out.println("flake8bin: " + flake8bin);
+                if (flake8bin == null) {
+                    return;
+                }
+
+                String basePath = PythonInspectionUtil.getBasePathFromFile(file);
                 String target = file.getVirtualFile().getCanonicalPath();
                 if (target != null) {
-                    String basePath = file.getProject().getBasePath();
                     String body = file.getText();
                     TextOffsetDetector detector = new TextOffsetDetector(body);
                     try {

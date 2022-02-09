@@ -7,7 +7,7 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
@@ -31,20 +31,19 @@ public class MypyLocalInspection extends LocalInspectionTool {
     @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-        final String mypybin = PythonInspectionUtil.getPythonCommandBin(
-                ProjectRootManager.getInstance(holder.getProject()).getProjectSdk(),
-                "mypy");
-        if (mypybin == null) {
-            return super.buildVisitor(holder, isOnTheFly);
-        }
-
         return new PsiElementVisitor() {
             @Override
             public void visitFile(@NotNull PsiFile file) {
                 super.visitFile(file);
+                Sdk sdk = PythonInspectionUtil.getSdkFromFile(file);
+                final String mypybin = PythonInspectionUtil.getPythonCommandBin(sdk, "mypy");
+                if (mypybin == null) {
+                    return;
+                }
+
+                String basePath = PythonInspectionUtil.getBasePathFromFile(file);
                 String target = file.getVirtualFile().getCanonicalPath();
                 if (target != null) {
-                    String basePath = file.getProject().getBasePath();
                     String body = file.getText();
                     TextOffsetDetector detector = new TextOffsetDetector(body);
                     Path tmp = null;

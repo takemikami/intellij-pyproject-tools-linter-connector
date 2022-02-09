@@ -7,7 +7,7 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
@@ -27,20 +27,19 @@ public class PylintLocalInspection extends LocalInspectionTool {
     @NotNull
     @Override
     public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-        final String pylintbin = PythonInspectionUtil.getPythonCommandBin(
-                ProjectRootManager.getInstance(holder.getProject()).getProjectSdk(),
-                "pylint");
-        if (pylintbin == null) {
-            return super.buildVisitor(holder, isOnTheFly);
-        }
-
         return new PsiElementVisitor() {
             @Override
             public void visitFile(@NotNull PsiFile file) {
                 super.visitFile(file);
+                Sdk sdk = PythonInspectionUtil.getSdkFromFile(file);
+                final String pylintbin = PythonInspectionUtil.getPythonCommandBin(sdk, "pylint");
+                if (pylintbin == null) {
+                    return;
+                }
+
+                String basePath = PythonInspectionUtil.getBasePathFromFile(file);
                 String target = file.getVirtualFile().getCanonicalPath();
                 if (target != null) {
-                    String basePath = file.getProject().getBasePath();
                     String body = file.getText();
                     TextOffsetDetector detector = new TextOffsetDetector(body);
                     try {

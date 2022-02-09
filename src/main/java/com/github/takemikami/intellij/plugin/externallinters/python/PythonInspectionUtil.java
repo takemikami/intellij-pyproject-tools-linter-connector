@@ -1,8 +1,13 @@
 package com.github.takemikami.intellij.plugin.externallinters.python;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -26,4 +31,21 @@ public class PythonInspectionUtil {
         LOG.debug("command detected. path=" + cmdbin);
         return cmdbin;
     }
+
+    public static Sdk getSdkFromFile(PsiFile file) {
+        Module mod = ModuleUtil.findModuleForFile(file);
+        if (mod == null) {
+            return ProjectRootManager.getInstance(file.getProject()).getProjectSdk();
+        }
+        return ModuleRootManager.getInstance(mod).getSdk();
+    }
+
+    public static String getBasePathFromFile(PsiFile file) {
+        Module mod = ModuleUtil.findModuleForFile(file);
+        if (mod == null) {
+            return file.getProject().getBasePath();
+        }
+        return ModuleRootManager.getInstance(mod).getContentRoots()[0].getCanonicalPath();
+    }
+
 }
