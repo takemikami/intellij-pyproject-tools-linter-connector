@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -54,6 +56,26 @@ public class CommandUtil {
     return new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
   }
 
-
+  /**
+   * Return command path.
+   *
+   * @param cmd command name
+   * @return command path
+   */
+  public static String findCommandPath(String cmd) {
+    String out;
+    try {
+      out = CommandUtil.runCommand(new String[]{"which", cmd}, "/", null).strip();
+      if (out.strip().length() == 0) {
+        return null;
+      }
+    } catch (IOException ex) {
+      LOG.error("command which " + cmd + " error: ", ex);
+      return null;
+    }
+    if (!Files.exists(Paths.get(out))) {
+      return null;
+    }
+    return out;
+  }
 }
-

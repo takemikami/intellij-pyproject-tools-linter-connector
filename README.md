@@ -8,6 +8,7 @@ Support Tools:
 - flake8
 - pylint
 - mypy
+- tflint
 
 Limitations:
 
