@@ -42,37 +42,34 @@ public class PylintLocalInspection extends LocalInspectionTool {
         }
 
         String basePath = PythonInspectionUtil.getBasePathFromFile(file);
-        String target = file.getVirtualFile().getCanonicalPath();
-        if (target != null) {
-          String body = file.getText();
-          TextOffsetDetector detector = new TextOffsetDetector(body);
-          try {
-            String[] cmd = new String[]{pylintbin, "--from-stdin", file.getName()};
-            String output = CommandUtil.runCommand(cmd, basePath, null, body);
-            Arrays.stream(output.split("\n")).map(ln -> {
-              Matcher m = OUTPUT_PATTERN.matcher(ln);
-              if (!m.matches()) {
-                return null;
-              }
-              return new LinterProblem(
-                  m.group(1),
-                  Integer.parseInt(m.group(2)),
-                  Integer.parseInt(m.group(3)) + 1,
-                  m.group(4),
-                  null,
-                  m.group(5)
-              );
-            }).filter(Objects::nonNull).forEach(problem -> {
-              int offset = detector.getOffset(problem.lineno, problem.colno);
-              holder.registerProblem(
-                  file,
-                  new TextRange(offset, offset + 1),
-                  "pylint: " + problem.errorCode + " " + problem.message,
-                  LocalQuickFix.EMPTY_ARRAY);
-            });
-          } catch (IOException ex) {
-            LOG.error("pylint execution error, ", ex);
-          }
+        String body = file.getText();
+        TextOffsetDetector detector = new TextOffsetDetector(body);
+        try {
+          String[] cmd = new String[]{pylintbin, "--from-stdin", file.getName()};
+          String output = CommandUtil.runCommand(cmd, basePath, null, body);
+          Arrays.stream(output.split("\n")).map(ln -> {
+            Matcher m = OUTPUT_PATTERN.matcher(ln);
+            if (!m.matches()) {
+              return null;
+            }
+            return new LinterProblem(
+                m.group(1),
+                Integer.parseInt(m.group(2)),
+                Integer.parseInt(m.group(3)) + 1,
+                m.group(4),
+                null,
+                m.group(5)
+            );
+          }).filter(Objects::nonNull).forEach(problem -> {
+            int offset = detector.getOffset(problem.lineno, problem.colno);
+            holder.registerProblem(
+                file,
+                new TextRange(offset, offset + 1),
+                "pylint: " + problem.errorCode + " " + problem.message,
+                LocalQuickFix.EMPTY_ARRAY);
+          });
+        } catch (IOException ex) {
+          LOG.error("pylint execution error, ", ex);
         }
       }
     };
