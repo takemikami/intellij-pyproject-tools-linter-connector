@@ -1,5 +1,6 @@
 package com.github.takemikami.intellij.plugin.externallinters;
 
+
 import com.intellij.openapi.diagnostic.Logger;
 import java.io.File;
 import java.io.IOException;
@@ -63,19 +64,29 @@ public class CommandUtil {
    * @return command path
    */
   public static String findCommandPath(String cmd) {
-    String out;
     try {
-      out = CommandUtil.runCommand(new String[]{"which", cmd}, "/", null).strip();
-      if (out.strip().length() == 0) {
-        return null;
+      String p = CommandUtil.runCommand(
+          new String[]{"which", cmd},
+          "/",
+          null
+      ).strip();
+      if (p.strip().length() > 0 && Files.exists(Paths.get(p))) {
+        return p;
       }
     } catch (IOException ex) {
       LOG.error("command which " + cmd + " error: ", ex);
-      return null;
     }
-    if (!Files.exists(Paths.get(out))) {
-      return null;
+    for (String d : new String[]{
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin",
+        "/opt/homebrew/bin",
+    }) {
+      String p = d + "/" + cmd;
+      if (Files.exists(Paths.get(p))) {
+        return p;
+      }
     }
-    return out;
+    return null;
   }
 }
