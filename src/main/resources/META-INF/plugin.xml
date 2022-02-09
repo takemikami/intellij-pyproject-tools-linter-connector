@@ -18,18 +18,21 @@
                          groupName="ExternalLinters"
                          enabledByDefault="true"
                          level="WARNING"
+                         runForWholeFile="true"
                          implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.Flake8LocalInspection"/>
         <localInspection language="Python"
                          displayName="Pylint"
                          groupName="ExternalLinters"
                          enabledByDefault="true"
                          level="WARNING"
+                         runForWholeFile="true"
                          implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.PylintLocalInspection"/>
         <localInspection language="Python"
                          displayName="mypy"
                          groupName="ExternalLinters"
                          enabledByDefault="true"
                          level="WARNING"
+                         runForWholeFile="true"
                          implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.MypyLocalInspection"/>
     </extensions>
 

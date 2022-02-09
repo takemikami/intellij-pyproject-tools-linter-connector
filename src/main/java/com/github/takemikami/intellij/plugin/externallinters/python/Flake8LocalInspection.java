@@ -32,7 +32,6 @@ public class Flake8LocalInspection extends LocalInspectionTool {
                 super.visitFile(file);
                 Sdk sdk = PythonInspectionUtil.getSdkFromFile(file);
                 final String flake8bin = PythonInspectionUtil.getPythonCommandBin(sdk, "flake8");
-                System.out.println("flake8bin: " + flake8bin);
                 if (flake8bin == null) {
                     return;
                 }
