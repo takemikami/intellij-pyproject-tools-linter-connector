@@ -44,6 +44,15 @@
       runForWholeFile="true"
       implementationClass="com.github.takemikami.intellij.plugin.externallinters.hcl.TflintLocalInspection"/>
 
+    <!-- SQL -->
+    <localInspection language="SQL"
+      displayName="SQLFluff"
+      groupName="ExternalLinters"
+      enabledByDefault="true"
+      level="WARNING"
+      runForWholeFile="true"
+      implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.SQLFluffLocalInspection"/>
+
   </extensions>
 
   <actions>
