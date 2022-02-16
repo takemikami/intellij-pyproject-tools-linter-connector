@@ -9,6 +9,7 @@ Support Tools:
 - pylint
 - mypy
 - tflint
+- SQLFluff
 
 Limitations:
 
