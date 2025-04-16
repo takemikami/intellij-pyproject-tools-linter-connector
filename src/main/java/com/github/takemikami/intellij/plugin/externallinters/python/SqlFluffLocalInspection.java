@@ -18,9 +18,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 
-class SQLFluffLocalInspection extends LocalInspectionTool {
+class SqlFluffLocalInspection extends LocalInspectionTool {
 
-  private static final Logger LOG = Logger.getInstance(SQLFluffLocalInspection.class);
+  private static final Logger LOG = Logger.getInstance(SqlFluffLocalInspection.class);
 
   private static final Pattern OUTPUT_PATTERN = Pattern.compile(
       "L:\\s*([0-9]+)\\s*\\|\\s*P:\\s*([0-9]+)\\s*\\|\\s*([A-Z0-9]+)\\s*\\|\\s(.*)");
