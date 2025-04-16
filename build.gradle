@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.intellij' version '1.3.1'
+    id 'org.jetbrains.intellij.platform' version '2.5.0'
     id 'java'
     id 'checkstyle'
 }
@@ -9,28 +9,33 @@ version '0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    intellijPlatform {
+        pycharmCommunity '2025.1'
+        bundledPlugin 'PythonCore'
+    }
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
-intellij {
-    version = '2021.3'
-    type = 'PC'
-}
-patchPluginXml {
-    changeNotes = """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+intellijPlatform {
+    pluginConfiguration {
+        ideaVersion {
+            untilBuild = provider { null }
+        }
+    }
 }
 test {
     useJUnitPlatform()
