@@ -52,8 +52,6 @@ public class LinterProblem {
    * @param filename   target filename
    * @param lineno     line number of problem
    * @param colno      column index of problem
-   * @param linenoEnd  line number of problem
-   * @param colnoEnd   column index of problem
    * @param errorCode  problem code
    * @param errorLevel problem level
    * @param message    problem message
@@ -72,6 +70,8 @@ public class LinterProblem {
     this.errorCode = errorCode;
     this.errorLevel = errorLevel;
     this.message = message;
+    this.linenoEnd = -1;
+    this.colnoEnd = -1;
   }
   public String getFilename() {
     return filename;
