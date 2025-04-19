@@ -8,6 +8,8 @@ public class LinterProblem {
   public String filename;
   public int lineno;
   public int colno;
+  public int linenoEnd;
+  public int colnoEnd;
   public String errorCode;
   public String errorLevel;
   public String message;
@@ -18,6 +20,40 @@ public class LinterProblem {
    * @param filename   target filename
    * @param lineno     line number of problem
    * @param colno      column index of problem
+   * @param linenoEnd  line number of problem
+   * @param colnoEnd   column index of problem
+   * @param errorCode  problem code
+   * @param errorLevel problem level
+   * @param message    problem message
+   */
+  public LinterProblem(
+      String filename,
+      int lineno,
+      int colno,
+      int linenoEnd,
+      int colnoEnd,
+      String errorCode,
+      String errorLevel,
+      String message
+  ) {
+    this.filename = filename;
+    this.lineno = lineno;
+    this.colno = colno;
+    this.linenoEnd = linenoEnd;
+    this.colnoEnd = colnoEnd;
+    this.errorCode = errorCode;
+    this.errorLevel = errorLevel;
+    this.message = message;
+  }
+
+  /**
+   * Problem object constructor.
+   *
+   * @param filename   target filename
+   * @param lineno     line number of problem
+   * @param colno      column index of problem
+   * @param linenoEnd  line number of problem
+   * @param colnoEnd   column index of problem
    * @param errorCode  problem code
    * @param errorLevel problem level
    * @param message    problem message
@@ -37,7 +73,6 @@ public class LinterProblem {
     this.errorLevel = errorLevel;
     this.message = message;
   }
-
   public String getFilename() {
     return filename;
   }
@@ -60,6 +95,22 @@ public class LinterProblem {
 
   public void setColno(int colno) {
     this.colno = colno;
+  }
+
+  public int getLinenoEnd() {
+    return linenoEnd;
+  }
+
+  public void setLinenoEnd(int linenoEnd) {
+    this.linenoEnd = linenoEnd;
+  }
+
+  public int getColnoEnd() {
+    return colnoEnd;
+  }
+
+  public void setColnoEnd(int colnoEnd) {
+    this.colnoEnd = colnoEnd;
   }
 
   public String getErrorCode() {
