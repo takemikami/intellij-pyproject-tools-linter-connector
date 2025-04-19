@@ -3,7 +3,7 @@ package com.github.takemikami.intellij.plugin.externallinters;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Arrays;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Text offset detector, from line-number and column-number to offset.
