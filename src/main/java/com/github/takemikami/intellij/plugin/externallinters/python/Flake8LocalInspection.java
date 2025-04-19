@@ -1,19 +1,11 @@
 package com.github.takemikami.intellij.plugin.externallinters.python;
 
-import com.github.takemikami.intellij.plugin.externallinters.CommandUtil;
 import com.github.takemikami.intellij.plugin.externallinters.LinterProblem;
-import com.github.takemikami.intellij.plugin.externallinters.TextOffsetDetector;
-import com.intellij.codeInspection.LocalInspectionTool;
-import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiFile;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
@@ -21,62 +13,47 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Local Inspection of flake8.
  */
-public class Flake8LocalInspection extends LocalInspectionTool {
-
-  private static final Logger LOG = Logger.getInstance(Flake8LocalInspection.class);
-
-  private static final Pattern OUTPUT_PATTERN = Pattern.compile(
-      "([^:]*):([^:]*):([^:]*):\\s*([A-Z0-9]*)\\s*(.*)");
+public class Flake8LocalInspection extends AbstractPythonInspection {
 
   @NotNull
   @Override
   public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
-
-    return new PsiElementVisitor() {
-      @Override
-      public void visitFile(@NotNull PsiFile file) {
-        super.visitFile(file);
-        Sdk sdk = PythonInspectionUtil.getSdkFromFile(file);
-        final String flake8bin = PythonInspectionUtil.getPythonCommandBin(sdk, "flake8");
-        if (flake8bin == null) {
-          return;
-        }
-
-        String basePath = PythonInspectionUtil.getBasePathFromFile(file);
-        String body = file.getText();
-        TextOffsetDetector detector = new TextOffsetDetector(body);
-        try {
-          String[] cmd = new String[]{
-              flake8bin,
-              "--format",
-              "'%(path)s:%(row)d:%(col)d: %(code)s %(text)s'",
-              "-"};
-          String output = CommandUtil.runCommand(cmd, basePath, null, body);
-          Arrays.stream(output.split("\n")).map(ln -> {
-            Matcher m = OUTPUT_PATTERN.matcher(ln);
-            if (!m.matches()) {
-              return null;
-            }
-            return new LinterProblem(
-                m.group(1),
-                Integer.parseInt(m.group(2)),
-                Integer.parseInt(m.group(3)),
-                m.group(4),
-                null,
-                m.group(5)
-            );
-          }).filter(Objects::nonNull).forEach(problem -> {
-            int offset = detector.getOffset(problem.lineno, problem.colno);
-            holder.registerProblem(
-                file,
-                new TextRange(offset, offset + 1),
-                "flake8: " + problem.errorCode + " " + problem.message,
-                LocalQuickFix.EMPTY_ARRAY);
-          });
-        } catch (IOException ex) {
-          LOG.error("flake8 execution error, ", ex);
-        }
-      }
-    };
+    return buildPsiElementVisitorByCommand(holder, isOnTheFly, "pflake8");
   }
+
+  boolean isEnabledByPyprojectToml(String tomlBody) {
+    return Arrays.stream(tomlBody.split("\n"))
+        .anyMatch(ln -> ln.trim().startsWith("[tool.flake8]"));
+  }
+
+  private static final Pattern OUTPUT_PATTERN = Pattern.compile(
+      "([^:]*):([^:]*):([^:]*):\\s*([A-Z0-9]*)\\s*(.*)");
+
+  List<LinterProblem> run(String binPath, String basePath, String path, String body) throws IOException {
+    return runLinter(
+        binPath,
+        new String[]{
+            "--format",
+            "'%(path)s:%(row)d:%(col)d: %(code)s %(text)s'",
+            "-"
+        },
+        basePath,
+        null,
+        path,
+        body,
+        OUTPUT_PATTERN
+    );
+  }
+
+  LinterProblem createLinterProblemByMatcher(@NotNull Matcher matcher) {
+    return new LinterProblem(
+        matcher.group(1),
+        Integer.parseInt(matcher.group(2)),
+        Integer.parseInt(matcher.group(3)),
+        matcher.group(4),
+        null,
+        matcher.group(5)
+    );
+  }
+
 }
