@@ -30,7 +30,7 @@ public class MypyLocalInspection extends LocalInspectionTool {
   private static final Logger LOG = Logger.getInstance(MypyLocalInspection.class);
 
   private static final Pattern OUTPUT_PATTERN = Pattern.compile(
-      "([^:]*):([^:]*):([^:]*)\\s*([^:]*):\\s*(.*)");
+      "([^:]*):([^:]*):([^:]*):([^:]*):([^:]*):\\s*([^:]*):\\s*(.*)");
 
   @NotNull
   @Override
@@ -59,6 +59,8 @@ public class MypyLocalInspection extends LocalInspectionTool {
           String[] cmd = new String[]{
               mypybin,
               "--show-column-numbers",
+              "--show-error-end",
+              "--no-color-output",
               "--shadow-file",
               target, tmp.toFile().getAbsolutePath(), target};
           String output = CommandUtil.runCommand(cmd, basePath, null);
@@ -74,15 +76,18 @@ public class MypyLocalInspection extends LocalInspectionTool {
                 m.group(1),
                 Integer.parseInt(m.group(2)),
                 Integer.parseInt(m.group(3)),
+                Integer.parseInt(m.group(4)),
+                Integer.parseInt(m.group(5)),
                 null,
-                m.group(4),
-                m.group(5)
+                m.group(6),
+                m.group(7)
             );
           }).filter(Objects::nonNull).forEach(problem -> {
             int offset = detector.getOffset(problem.lineno, problem.colno);
+            int offsetEnd = detector.getOffset(problem.linenoEnd, problem.colnoEnd);
             holder.registerProblem(
                 file,
-                new TextRange(offset, offset + 1),
+                new TextRange(offset, offsetEnd + 1),
                 "mypy: " + problem.getErrorLevel() + " " + problem.message,
                 LocalQuickFix.EMPTY_ARRAY);
           });

@@ -46,7 +46,11 @@ public class Flake8LocalInspection extends LocalInspectionTool {
         String body = file.getText();
         TextOffsetDetector detector = new TextOffsetDetector(body);
         try {
-          String[] cmd = new String[]{flake8bin, "-"};
+          String[] cmd = new String[]{
+              flake8bin,
+              "--format",
+              "'%(path)s:%(row)d:%(col)d: %(code)s %(text)s'",
+              "-"};
           String output = CommandUtil.runCommand(cmd, basePath, null, body);
           Arrays.stream(output.split("\n")).map(ln -> {
             Matcher m = OUTPUT_PATTERN.matcher(ln);
@@ -76,5 +80,3 @@ public class Flake8LocalInspection extends LocalInspectionTool {
     };
   }
 }
-
-
