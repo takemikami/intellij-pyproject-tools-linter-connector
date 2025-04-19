@@ -67,6 +67,9 @@ public class MypyLocalInspection extends LocalInspectionTool {
             if (!m.matches()) {
               return null;
             }
+            if (!file.getVirtualFile().getCanonicalPath().substring(basePath.length()+1).equals(m.group(1))) {
+              return null;
+            }
             return new LinterProblem(
                 m.group(1),
                 Integer.parseInt(m.group(2)),
