@@ -36,24 +36,29 @@
       implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.MypyLocalInspection"/>
 
     <!-- hcl -->
-    <localInspection language="HCL-Terraform"
+    <!-- localInspection language="HCL-Terraform"
       displayName="tflint"
       groupName="ExternalLinters"
       enabledByDefault="true"
       level="WARNING"
       runForWholeFile="true"
-      implementationClass="com.github.takemikami.intellij.plugin.externallinters.hcl.TflintLocalInspection"/>
+      implementationClass="com.github.takemikami.intellij.plugin.externallinters.hcl.TflintLocalInspection"/ -->
 
     <!-- SQL -->
-    <localInspection language="SQL"
+    <!-- localInspection language="SQL"
       displayName="SQLFluff"
       groupName="ExternalLinters"
       enabledByDefault="true"
       level="WARNING"
       runForWholeFile="true"
-      implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.SqlFluffLocalInspection"/>
+      implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.SqlFluffLocalInspection"/ -->
 
   </extensions>
+
+  <projectListeners>
+    <listener class="com.github.takemikami.intellij.plugin.externallinters.python.PythonFormatterDocumentManagerListener"
+      topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener"/>
+  </projectListeners>
 
   <actions>
   </actions>
