@@ -9,3 +9,10 @@ repos:
         args: [--markdown-linebreak-ext=md]
       - id: no-commit-to-branch
         args: [--branch, master]
+  - repo: local
+    hooks:
+      - id: ktlint
+        name: ktlint
+        language: system
+        entry: ./gradlew ktlintCheck
+        pass_filenames: false
