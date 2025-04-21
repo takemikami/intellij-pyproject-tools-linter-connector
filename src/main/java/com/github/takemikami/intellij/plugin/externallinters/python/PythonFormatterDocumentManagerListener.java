@@ -4,6 +4,7 @@ package com.github.takemikami.intellij.plugin.externallinters.python;
 import com.github.takemikami.intellij.plugin.externallinters.CommandUtil;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.DocumentRunnable;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileDocumentManagerListener;
 import com.intellij.openapi.project.Project;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import com.intellij.openapi.editor.Document;
 import java.util.List;
 import java.util.Objects;
+import com.intellij.openapi.command.CommandProcessor;
 
 public class PythonFormatterDocumentManagerListener implements FileDocumentManagerListener {
 
@@ -82,13 +84,23 @@ public class PythonFormatterDocumentManagerListener implements FileDocumentManag
           );
         }
 
-        final String output = newBody;
+        if (!body.equals(newBody)) {
+          final String output = newBody;
+          final int bodyLength = body.length();
 
-        Application application = ApplicationManager.getApplication();
-        Runnable action = () -> {
-          d.setText(output);
-        };
-        application.runWriteAction(action);
+          Application application = ApplicationManager.getApplication();
+          application.runWriteAction(new DocumentRunnable(d, null) {
+            @Override
+            public void run() {
+              CommandProcessor.getInstance().runUndoTransparentAction(new Runnable(){
+                @Override
+                public void run() {
+                  d.replaceString(0, bodyLength, output);
+                }
+              });
+            }
+          });
+        }
 
       } catch (IOException e) {
         System.out.println("Error: " + e.getMessage());
