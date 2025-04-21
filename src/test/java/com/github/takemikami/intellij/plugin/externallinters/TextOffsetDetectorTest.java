@@ -1,13 +1,12 @@
 package com.github.takemikami.intellij.plugin.externallinters;
 
-import org.junit.jupiter.api.Test;
+import junit.framework.TestCase;
 
 /**
  * Tests for TextOffsetDetector class.
  */
-public class TextOffsetDetectorTest {
+public class TextOffsetDetectorTest extends TestCase {
 
-  @Test
   public void testTextOffsetDetector() {
     String s = "aaaa\naaa\n\n\na";
     TextOffsetDetector tod = new TextOffsetDetector(s);
