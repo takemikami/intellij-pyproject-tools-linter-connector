@@ -1,6 +1,5 @@
-package com.github.takemikami.intellij.plugin.externallinters.python
+package com.github.takemikami.intellij.plugin.pyprojectlinters
 
-import com.github.takemikami.intellij.plugin.externallinters.CommandUtil
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
@@ -31,11 +30,11 @@ class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentMan
             Consumer { d: Document ->
                 val file = psiDocumentManager.getPsiFile(d)
                 if (file == null) return@Consumer
-                val sdk = PythonInspectionUtil.getSdkFromFile(file)
+                val sdk = PythonInspectionUtil.Companion.getSdkFromFile(file)
                 if (sdk == null) return@Consumer
                 if (!file.language.isKindOf("Python")) return@Consumer
 
-                val basePath: String = PythonInspectionUtil.getBasePathFromFile(file)!!
+                val basePath: String = PythonInspectionUtil.Companion.getBasePathFromFile(file)!!
                 val path: String? =
                     Objects.requireNonNull(file.getVirtualFile().getCanonicalPath())
                         ?.substring(basePath.length + 1)
@@ -52,8 +51,11 @@ class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentMan
                     // black
                     val enableBlack =
                         lines.stream()
-                            .anyMatch { ln: String? -> ln!!.trim { it <= ' ' }.startsWith("[tool.black]") }
-                    val commandBinBlack = PythonInspectionUtil.getPythonCommandBin(sdk, "black")
+                            .anyMatch { ln: String? ->
+                                ln!!.trim { it <= ' ' }.startsWith("[tool.black]")
+                            }
+                    val commandBinBlack =
+                        PythonInspectionUtil.Companion.getPythonCommandBin(sdk, "black")
                     if (enableBlack && commandBinBlack != null) {
                         newBody =
                             CommandUtil.runCommand(
@@ -69,8 +71,11 @@ class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentMan
                     // isort
                     val enableIsort =
                         lines.stream()
-                            .anyMatch { ln: String? -> ln!!.trim { it <= ' ' }.startsWith("[tool.isort]") }
-                    val commandBinIsort = PythonInspectionUtil.getPythonCommandBin(sdk, "isort")
+                            .anyMatch { ln: String? ->
+                                ln!!.trim { it <= ' ' }.startsWith("[tool.isort]")
+                            }
+                    val commandBinIsort =
+                        PythonInspectionUtil.Companion.getPythonCommandBin(sdk, "isort")
                     if (enableIsort && commandBinIsort != null) {
                         newBody =
                             CommandUtil.runCommand(

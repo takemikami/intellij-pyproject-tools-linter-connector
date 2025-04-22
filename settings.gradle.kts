@@ -1,1 +1,1 @@
-rootProject.name = "externallinters"
+rootProject.name = "pyprojecttools_linterconnector"

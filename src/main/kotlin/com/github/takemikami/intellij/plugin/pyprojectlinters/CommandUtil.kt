@@ -1,4 +1,4 @@
-package com.github.takemikami.intellij.plugin.externallinters
+package com.github.takemikami.intellij.plugin.pyprojectlinters
 
 import java.io.File
 import java.io.IOException

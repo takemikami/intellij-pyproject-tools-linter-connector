@@ -1,4 +1,4 @@
-package com.github.takemikami.intellij.plugin.externallinters
+package com.github.takemikami.intellij.plugin.pyprojectlinters
 
 import java.io.BufferedReader
 import java.io.StringReader
