@@ -1,6 +1,5 @@
-package com.github.takemikami.intellij.plugin.externallinters.python
+package com.github.takemikami.intellij.plugin.pyprojectlinters
 
-import com.github.takemikami.intellij.plugin.externallinters.LinterProblem
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import java.util.regex.Matcher

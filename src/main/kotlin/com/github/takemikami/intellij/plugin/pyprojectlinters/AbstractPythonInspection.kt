@@ -1,8 +1,5 @@
-package com.github.takemikami.intellij.plugin.externallinters.python
+package com.github.takemikami.intellij.plugin.pyprojectlinters
 
-import com.github.takemikami.intellij.plugin.externallinters.CommandUtil
-import com.github.takemikami.intellij.plugin.externallinters.LinterProblem
-import com.github.takemikami.intellij.plugin.externallinters.TextOffsetDetector
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.util.TextRange
@@ -28,11 +25,11 @@ abstract class AbstractPythonInspection : LocalInspectionTool() {
         return object : PsiElementVisitor() {
             override fun visitFile(file: PsiFile) {
                 super.visitFile(file)
-                val sdk = PythonInspectionUtil.getSdkFromFile(file)
-                val commandBin = PythonInspectionUtil.getPythonCommandBin(sdk, commandName)
+                val sdk = PythonInspectionUtil.Companion.getSdkFromFile(file)
+                val commandBin = PythonInspectionUtil.Companion.getPythonCommandBin(sdk, commandName)
                 if (commandBin == null) return
                 if (!Files.exists(Paths.get(commandBin))) return
-                val basePath: String = PythonInspectionUtil.getBasePathFromFile(file)!!
+                val basePath: String = PythonInspectionUtil.Companion.getBasePathFromFile(file)!!
                 try {
                     val lines: MutableList<String?> =
                         Files.readAllLines(
@@ -63,7 +60,8 @@ abstract class AbstractPythonInspection : LocalInspectionTool() {
                                     detector.getOffset(problem.linenoEnd, problem.colnoEnd) + 1
                             }
                             val range: TextRange? = TextRange(offset, offsetEnd)
-                            val msg: String = commandName + ": " + problem.errorCode + " " + problem.message
+                            val msg: String =
+                                commandName + ": " + problem.errorCode + " " + problem.message
                             holder.registerProblem(
                                 file,
                                 range,

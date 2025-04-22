@@ -1,4 +1,4 @@
-package com.github.takemikami.intellij.plugin.externallinters.python
+package com.github.takemikami.intellij.plugin.pyprojectlinters
 
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleUtil

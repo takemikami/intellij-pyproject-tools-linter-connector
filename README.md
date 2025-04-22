@@ -1,22 +1,34 @@
-intellij-plugin-external-linters
+Python Linter/Formatter at pyproject tools
 ----
 
-External Linter To IDE Inspection Connector Plugin for IntelliJ Platform-based IDEs.
+Python external linter/formatter connector plugin for PyCharm and IntelliJ IDEA,
+This plugin runs according to the `pyrproject.toml` file.
 
-Support Tools:
+## Description
 
-- flake8
-- pylint
+This plugin is python external linter and formatter connector.
+
+- Connect external linters' output to IDE Inspections.
+- Replace python source code to external formatters' output on save.
+- You need to write linter/formatter configuration in `pyrproject.toml`
+
+Support for linters:
+
+- pyproject-flake8
 - mypy
-- tflint
-- SQLFluff
+- Pylint
+
+Support for formatters:
+
+- black
+- isort
 
 Limitations:
 
 - run on Unix-based systems only. (not support windows)
 - run on local interpreter only. (not support remote interpreter)
 
-## Install
+## Build and Installation
 
 Build plugin distribution.
 
@@ -26,12 +38,16 @@ Build plugin distribution.
 
 Install plugin.
 
-- Start IntelliJ IDEA
-- Open Plugins Preferences
-- Select 'Install Plugin from Disk'
-- Choice 'build/distributions/intellij-plubin-external-linters-VERSION.zip'
+1. Open setting, follow path:  
+   Settings -> Plugins
+2. Select 'Install Plugin from Disk'
+4. Choice 'build/distributions/pyprojecttools_linterconnector-VERSION.zip'
 
-Enable/Disable inspection.
+## Settings
 
-- Open Editor/Inspections Preferences
-- Check or uncheck tools' check box under ExternalLinters
+1. Open setting, follow path:  
+   Settings -> Editor -> Inspections -> ExternalLinters -> Python
+2. Check or remove the following options.
+   - pyproject-flake8
+   - mypy
+   - Pylint

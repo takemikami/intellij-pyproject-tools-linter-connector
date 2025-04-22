@@ -1,42 +1,44 @@
 <idea-plugin>
-  <id>com.github.takemikami.intellij-plugin-external-linters</id>
-  <name>External Linters</name>
-  <vendor url="https://takemikami.com/">takemikami.com</vendor>
+  <id>com.github.takemikami.intellij-pyproject-tools-linter-connector</id>
+  <name>Python Linter/Formatter at pyproject tools</name>
+  <vendor email="takeshi.mikami@gmail.com" url="https://takemikami.com/">Mikami, Takeshi</vendor>
 
   <description><![CDATA[
-    External Linters
+    Python external linter/formatter connector plugin for PyCharm and IntelliJ IDEA,
+    This plugin runs according to the `pyrproject.toml` file.
     ]]></description>
 
   <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
        on how to target different products -->
   <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.python</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <localInspection language="Python"
-      displayName="flake8"
-      groupName="ExternalLinters"
+      displayName="pyproject-flake8"
+      groupName="Pyproject Linters"
       enabledByDefault="true"
       level="WARNING"
       runForWholeFile="true"
-      implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.Flake8LocalInspection"/>
+      implementationClass="com.github.takemikami.intellij.plugin.pyprojectlinters.Flake8LocalInspection"/>
     <localInspection language="Python"
       displayName="Pylint"
-      groupName="ExternalLinters"
+      groupName="Pyproject Linters"
       enabledByDefault="true"
       level="WARNING"
       runForWholeFile="true"
-      implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.PylintLocalInspection"/>
+      implementationClass="com.github.takemikami.intellij.plugin.pyprojectlinters.PylintLocalInspection"/>
     <localInspection language="Python"
       displayName="mypy"
-      groupName="ExternalLinters"
+      groupName="Pyproject Linters"
       enabledByDefault="true"
       level="WARNING"
       runForWholeFile="true"
-      implementationClass="com.github.takemikami.intellij.plugin.externallinters.python.MypyLocalInspection"/>
+      implementationClass="com.github.takemikami.intellij.plugin.pyprojectlinters.MypyLocalInspection"/>
   </extensions>
 
   <projectListeners>
-    <listener class="com.github.takemikami.intellij.plugin.externallinters.python.PythonFormatterDocumentManagerListener"
+    <listener class="com.github.takemikami.intellij.plugin.pyprojectlinters.PythonFormatterDocumentManagerListener"
       topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener"/>
   </projectListeners>
 
