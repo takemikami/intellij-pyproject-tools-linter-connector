@@ -61,7 +61,7 @@ abstract class AbstractPythonInspection : LocalInspectionTool() {
                             }
                             val range: TextRange? = TextRange(offset, offsetEnd)
                             val msg: String =
-                                commandName + ": " + problem.errorCode + " " + problem.message
+                                "[" + commandName + "] " + problem.message
                             holder.registerProblem(
                                 file,
                                 range,

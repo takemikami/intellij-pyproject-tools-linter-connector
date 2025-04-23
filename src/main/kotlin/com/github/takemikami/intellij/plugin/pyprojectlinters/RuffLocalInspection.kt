@@ -6,25 +6,25 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
- * Local Inspection of flake8.
+ * Local Inspection of ruff.
  */
-class Flake8LocalInspection : AbstractPythonInspection() {
+class RuffLocalInspection : AbstractPythonInspection() {
     override fun buildVisitor(
         holder: ProblemsHolder,
         isOnTheFly: Boolean,
     ): PsiElementVisitor {
-        return buildPsiElementVisitorByCommand(holder, isOnTheFly, "pflake8")
+        return buildPsiElementVisitorByCommand(holder, isOnTheFly, "ruff")
     }
 
     override fun isEnabledByPyprojectToml(tomlBody: String?): Boolean {
         return tomlBody!!.split("\n").stream()
-            .anyMatch { ln -> ln.trim().startsWith("[tool.flake8]") }
+            .anyMatch { ln -> ln.trim().startsWith("[tool.ruff]") }
     }
 
     companion object {
         val OUTPUT_PATTERN: Pattern? =
             Pattern.compile(
-                "([^:]*):([^:]*):([^:]*):\\s*([A-Z0-9]*)\\s*(.*)",
+                "([^:]*):([^:]*):([^:]*):\\s*(.*)",
             )
     }
 
@@ -37,9 +37,10 @@ class Flake8LocalInspection : AbstractPythonInspection() {
         return runLinter(
             binPath,
             arrayOf<String?>(
-                "--format",
-                "'%(path)s:%(row)d:%(col)d: %(code)s %(text)s'",
-                "-",
+                "check",
+                "--output-format",
+                "concise",
+                path,
             ),
             basePath,
             null,
@@ -49,13 +50,12 @@ class Flake8LocalInspection : AbstractPythonInspection() {
         )
     }
 
-    override fun createLinterProblemByMatcher(matcher: Matcher): LinterProblem? {
-        val msg = matcher.group(4) + " " + matcher.group(5)
+    override fun createLinterProblemByMatcher(m: Matcher): LinterProblem? {
         return LinterProblem(
-            matcher.group(1),
-            matcher.group(2).toInt(),
-            matcher.group(3).toInt(),
-            msg,
+            m.group(1),
+            m.group(2).toInt(),
+            m.group(3).toInt(),
+            m.group(4),
         )
     }
 }
