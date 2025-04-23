@@ -50,6 +50,7 @@ class PylintLocalInspection : AbstractPythonInspection() {
     }
 
     override fun createLinterProblemByMatcher(m: Matcher): LinterProblem? {
+        val msg = m.group(6) + " " + m.group(7)
         try {
             return LinterProblem(
                 m.group(1),
@@ -57,9 +58,7 @@ class PylintLocalInspection : AbstractPythonInspection() {
                 m.group(3).toInt() + 1,
                 m.group(4).toInt(),
                 m.group(5).toInt(),
-                m.group(6),
-                null,
-                m.group(7),
+                msg,
             )
         } catch (e: NumberFormatException) {
             try {
@@ -67,9 +66,7 @@ class PylintLocalInspection : AbstractPythonInspection() {
                     m.group(1),
                     m.group(2).toInt(),
                     m.group(3).toInt() + 1,
-                    m.group(6),
-                    null,
-                    m.group(7),
+                    msg,
                 )
             } catch (e2: NumberFormatException) {
                 return null

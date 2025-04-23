@@ -17,11 +17,13 @@ Support for linters:
 - pyproject-flake8
 - mypy
 - Pylint
+- ruff
 
 Support for formatters:
 
 - black
 - isort
+- ruff
 
 Limitations:
 
@@ -51,3 +53,4 @@ Install plugin.
    - pyproject-flake8
    - mypy
    - Pylint
+   - ruff

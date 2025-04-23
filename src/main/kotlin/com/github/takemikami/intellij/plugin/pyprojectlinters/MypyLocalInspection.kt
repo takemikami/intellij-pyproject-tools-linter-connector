@@ -76,15 +76,14 @@ class MypyLocalInspection : AbstractPythonInspection() {
     }
 
     override fun createLinterProblemByMatcher(m: Matcher): LinterProblem? {
+        val msg = m.group(6) + " " + m.group(7)
         return LinterProblem(
             m.group(1),
             m.group(2).toInt(),
             m.group(3).toInt(),
             m.group(4).toInt(),
             m.group(5).toInt(),
-            null,
-            m.group(6),
-            m.group(7),
+            msg,
         )
     }
 

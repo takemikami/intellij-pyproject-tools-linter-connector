@@ -48,45 +48,29 @@ class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentMan
 
                     var newBody: String? = body
 
-                    // black
-                    val enableBlack =
-                        lines.stream()
-                            .anyMatch { ln: String? ->
-                                ln!!.trim { it <= ' ' }.startsWith("[tool.black]")
-                            }
-                    val commandBinBlack =
-                        PythonInspectionUtil.Companion.getPythonCommandBin(sdk, "black")
-                    if (enableBlack && commandBinBlack != null) {
-                        newBody =
-                            CommandUtil.runCommand(
-                                arrayOf<String?>(
-                                    commandBinBlack,
-                                    "-",
-                                ),
-                                basePath,
-                                null,
-                                newBody,
-                            )
-                    }
-                    // isort
-                    val enableIsort =
-                        lines.stream()
-                            .anyMatch { ln: String? ->
-                                ln!!.trim { it <= ' ' }.startsWith("[tool.isort]")
-                            }
-                    val commandBinIsort =
-                        PythonInspectionUtil.Companion.getPythonCommandBin(sdk, "isort")
-                    if (enableIsort && commandBinIsort != null) {
-                        newBody =
-                            CommandUtil.runCommand(
-                                arrayOf<String?>(
-                                    commandBinIsort,
-                                    "-",
-                                ),
-                                basePath,
-                                null,
-                                newBody,
-                            )
+                    data class Formatter(val commandName: String, val pyprojectPrefix: String, val args: Array<String>)
+                    for (formatter in arrayOf<Formatter>(
+                        Formatter("black", "[tool.black]", arrayOf<String>("-")),
+                        Formatter("isort", "[tool.isort]", arrayOf<String>("-")),
+                        Formatter("ruff", "[tool.ruff]", arrayOf<String>("format", "-")),
+                    )) {
+                        val enableFormatter =
+                            lines.stream()
+                                .anyMatch { ln: String? ->
+                                    ln!!.trim { it <= ' ' }.startsWith(formatter.pyprojectPrefix)
+                                }
+                        val commandBinFormatter =
+                            PythonInspectionUtil.Companion.getPythonCommandBin(sdk, formatter.commandName)
+                        if (enableFormatter && commandBinFormatter != null) {
+                            val cmd: Array<String?> = arrayOf<String?>(commandBinFormatter).plus(formatter.args)
+                            newBody =
+                                CommandUtil.runCommand(
+                                    cmd,
+                                    basePath,
+                                    null,
+                                    newBody,
+                                )
+                        }
                     }
 
                     if (newBody != null && body != newBody) {

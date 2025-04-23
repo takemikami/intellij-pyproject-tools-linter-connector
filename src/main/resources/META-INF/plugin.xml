@@ -35,6 +35,13 @@
       level="WARNING"
       runForWholeFile="true"
       implementationClass="com.github.takemikami.intellij.plugin.pyprojectlinters.MypyLocalInspection"/>
+    <localInspection language="Python"
+      displayName="ruff"
+      groupName="Pyproject Linters"
+      enabledByDefault="true"
+      level="WARNING"
+      runForWholeFile="true"
+      implementationClass="com.github.takemikami.intellij.plugin.pyprojectlinters.RuffLocalInspection"/>
   </extensions>
 
   <projectListeners>
