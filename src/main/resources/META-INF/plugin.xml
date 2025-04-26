@@ -1,6 +1,6 @@
 <idea-plugin>
   <id>com.github.takemikami.intellij-pyproject-tools-linter-connector</id>
-  <name>Python Linter/Formatter at pyproject tools</name>
+  <name>Pyproject Tools Linter/Formatter Connector</name>
   <vendor email="takeshi.mikami@gmail.com" url="https://takemikami.com/">Mikami, Takeshi</vendor>
 
   <description><![CDATA[

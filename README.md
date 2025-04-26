@@ -1,4 +1,4 @@
-Python Linter/Formatter at pyproject tools
+Pyproject Tools Linter/Formatter Connector
 ----
 
 Python external linter/formatter connector plugin for PyCharm and IntelliJ IDEA,
