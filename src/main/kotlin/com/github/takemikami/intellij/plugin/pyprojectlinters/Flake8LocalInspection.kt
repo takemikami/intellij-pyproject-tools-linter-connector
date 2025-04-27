@@ -16,36 +16,34 @@ class Flake8LocalInspection : AbstractPythonInspection() {
         return buildPsiElementVisitorByCommand(holder, isOnTheFly, "pflake8")
     }
 
-    override fun isEnabledByPyprojectToml(tomlBody: String?): Boolean {
-        return tomlBody!!.split("\n").stream()
+    override fun isEnabledByPyprojectToml(tomlBody: String): Boolean {
+        return tomlBody.split("\n").stream()
             .anyMatch { ln -> ln.trim().startsWith("[tool.flake8]") }
     }
 
-    companion object {
-        val OUTPUT_PATTERN: Pattern? =
-            Pattern.compile(
-                "([^:]*):([^:]*):([^:]*):\\s*([A-Z0-9]*)\\s*(.*)",
-            )
-    }
+    val outputPattern: Pattern =
+        Pattern.compile(
+            "([^:]*):([^:]*):([^:]*):\\s*([A-Z0-9]*)\\s*(.*)",
+        )
 
     override fun run(
-        binPath: String?,
-        basePath: String?,
-        path: String?,
-        body: String?,
-    ): MutableList<LinterProblem?>? {
+        binPath: String,
+        basePath: String,
+        path: String,
+        body: String,
+    ): List<LinterProblem> {
         return runLinter(
             binPath,
-            arrayOf<String?>(
+            arrayOf<String>(
                 "--format",
                 "'%(path)s:%(row)d:%(col)d: %(code)s %(text)s'",
                 "-",
             ),
             basePath,
             null,
-            path!!,
+            path,
             body,
-            OUTPUT_PATTERN!!,
+            outputPattern,
         )
     }
 

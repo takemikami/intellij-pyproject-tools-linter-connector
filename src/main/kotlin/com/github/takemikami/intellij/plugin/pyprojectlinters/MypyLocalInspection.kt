@@ -21,27 +21,25 @@ class MypyLocalInspection : AbstractPythonInspection() {
         return buildPsiElementVisitorByCommand(holder, isOnTheFly, "mypy")
     }
 
-    override fun isEnabledByPyprojectToml(tomlBody: String?): Boolean {
-        return tomlBody!!.split("\n").stream()
+    override fun isEnabledByPyprojectToml(tomlBody: String): Boolean {
+        return tomlBody.split("\n").stream()
             .anyMatch { ln -> ln.trim().startsWith("[tool.mypy]") }
     }
 
-    companion object {
-        val OUTPUT_PATTERN: Pattern? =
-            Pattern.compile(
-                "([^:]*):([^:]*):([^:]*):([^:]*):([^:]*):\\s*([^:]*):\\s*(.*)",
-            )
-    }
+    val outputPattern: Pattern =
+        Pattern.compile(
+            "([^:]*):([^:]*):([^:]*):([^:]*):([^:]*):\\s*([^:]*):\\s*(.*)",
+        )
 
     override fun run(
-        binPath: String?,
-        basePath: String?,
-        path: String?,
-        body: String?,
-    ): MutableList<LinterProblem?>? {
+        binPath: String,
+        basePath: String,
+        path: String,
+        body: String,
+    ): List<LinterProblem> {
         var tmp: Path? = null
         try {
-            tmp = Files.createTempFile(path!!.substring(0, path.length - 3), ".py")
+            tmp = Files.createTempFile(path.substring(0, path.length - 3), ".py")
             val pw: PrintWriter = PrintWriter(FileWriter(tmp.toFile()))
             pw.write(body)
             pw.flush()
@@ -49,7 +47,7 @@ class MypyLocalInspection : AbstractPythonInspection() {
 
             return runLinter(
                 binPath,
-                arrayOf<String?>(
+                arrayOf<String>(
                     "--show-column-numbers",
                     "--show-error-end",
                     "--no-color-output",
@@ -62,7 +60,7 @@ class MypyLocalInspection : AbstractPythonInspection() {
                 null,
                 path,
                 null,
-                OUTPUT_PATTERN!!,
+                outputPattern,
             )
         } finally {
             if (tmp != null) {
@@ -75,19 +73,19 @@ class MypyLocalInspection : AbstractPythonInspection() {
         }
     }
 
-    override fun createLinterProblemByMatcher(m: Matcher): LinterProblem? {
-        val msg = m.group(6) + " " + m.group(7)
+    override fun createLinterProblemByMatcher(matcher: Matcher): LinterProblem? {
+        val msg = matcher.group(6) + " " + matcher.group(7)
         return LinterProblem(
-            m.group(1),
-            m.group(2).toInt(),
-            m.group(3).toInt(),
-            m.group(4).toInt(),
-            m.group(5).toInt(),
+            matcher.group(1),
+            matcher.group(2).toInt(),
+            matcher.group(3).toInt(),
+            matcher.group(4).toInt(),
+            matcher.group(5).toInt(),
             msg,
         )
     }
 
-    override fun createTargetByMatcher(m: Matcher): String? {
-        return m.group(1)
+    override fun createTargetByMatcher(matcher: Matcher): String? {
+        return matcher.group(1)
     }
 }
