@@ -16,12 +16,10 @@ import java.nio.file.Path
 import java.util.Objects
 import java.util.function.Consumer
 
-class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentManagerListener {
-    private val project: Project = project
-
+class PythonFormatterDocumentManagerListener(private val project: Project) : FileDocumentManagerListener {
     override fun beforeAllDocumentsSaving() {
         val unsavedDocuments: MutableList<Document?> =
-            FileDocumentManager.getInstance().getUnsavedDocuments().toMutableList()
+            FileDocumentManager.getInstance().unsavedDocuments.toMutableList()
 
         // if (this.project == null) return
         val psiDocumentManager = PsiDocumentManager.getInstance(this.project)
@@ -30,19 +28,19 @@ class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentMan
             Consumer { d: Document ->
                 val file = psiDocumentManager.getPsiFile(d)
                 if (file == null) return@Consumer
-                val sdk = PythonInspectionUtil.Companion.getSdkFromFile(file)
+                val sdk = PythonCommandUtil.Companion.getSdkFromFile(file)
                 if (sdk == null) return@Consumer
                 if (!file.language.isKindOf("Python")) return@Consumer
 
-                val basePath: String = PythonInspectionUtil.Companion.getBasePathFromFile(file)!!
+                val basePath: String = PythonCommandUtil.Companion.getBasePathFromFile(file)!!
                 val path: String? =
-                    Objects.requireNonNull(file.getVirtualFile().getCanonicalPath())
+                    Objects.requireNonNull(file.virtualFile.canonicalPath)
                         ?.substring(basePath.length + 1)
                 val body = file.getText()
                 try {
                     val lines: MutableList<String> =
                         Files.readAllLines(
-                            Path.of(basePath + "/pyproject.toml"),
+                            Path.of("$basePath/pyproject.toml"),
                             StandardCharsets.UTF_8,
                         )
 
@@ -60,11 +58,11 @@ class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentMan
                                     ln!!.trim { it <= ' ' }.startsWith(formatter.pyprojectPrefix)
                                 }
                         val commandBinFormatter =
-                            PythonInspectionUtil.Companion.getPythonCommandBin(sdk, formatter.commandName)
+                            PythonCommandUtil.Companion.getPythonCommandBin(sdk, formatter.commandName)
                         if (enableFormatter && commandBinFormatter != null) {
-                            val cmd: Array<String?> = arrayOf<String?>(commandBinFormatter).plus(formatter.args)
+                            val cmd: Array<String> = arrayOf<String>(commandBinFormatter).plus(formatter.args)
                             newBody =
-                                CommandUtil.runCommand(
+                                PythonCommandUtil.runCommand(
                                     cmd,
                                     basePath,
                                     null,
@@ -94,7 +92,7 @@ class PythonFormatterDocumentManagerListener(project: Project) : FileDocumentMan
                         )
                     }
                 } catch (e: IOException) {
-                    println("Error: " + e.message)
+                    // nothing to do
                 }
             },
         )

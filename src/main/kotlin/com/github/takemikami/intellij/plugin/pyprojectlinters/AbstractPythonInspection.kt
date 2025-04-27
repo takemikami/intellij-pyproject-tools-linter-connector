@@ -9,7 +9,6 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.Arrays
 import java.util.Objects
 import java.util.function.Consumer
@@ -25,18 +24,17 @@ abstract class AbstractPythonInspection : LocalInspectionTool() {
         return object : PsiElementVisitor() {
             override fun visitFile(file: PsiFile) {
                 super.visitFile(file)
-                val sdk = PythonInspectionUtil.Companion.getSdkFromFile(file)
-                val commandBin = PythonInspectionUtil.Companion.getPythonCommandBin(sdk, commandName)
+                val sdk = PythonCommandUtil.Companion.getSdkFromFile(file)
+                val commandBin = PythonCommandUtil.Companion.getPythonCommandBin(sdk, commandName)
                 if (commandBin == null) return
-                if (!Files.exists(Paths.get(commandBin))) return
-                val basePath: String = PythonInspectionUtil.Companion.getBasePathFromFile(file)!!
+                val basePath: String = PythonCommandUtil.Companion.getBasePathFromFile(file)!!
                 try {
-                    val lines: MutableList<String?> =
+                    val tomlBody =
                         Files.readAllLines(
-                            Path.of(basePath + "/pyproject.toml"),
+                            Path.of("$basePath/pyproject.toml"),
                             StandardCharsets.UTF_8,
-                        )
-                    if (!isEnabledByPyprojectToml(java.lang.String.join("\n", lines))) {
+                        ).joinToString("\n")
+                    if (!isEnabledByPyprojectToml(tomlBody)) {
                         return
                     }
                 } catch (e: IOException) {
@@ -44,33 +42,31 @@ abstract class AbstractPythonInspection : LocalInspectionTool() {
                 }
 
                 val path =
-                    Objects.requireNonNull<String?>(file.getVirtualFile().getCanonicalPath())
+                    Objects.requireNonNull<String>(file.virtualFile.canonicalPath)
                         .substring(basePath.length + 1)
-                val body = file.getText()
+                val body = file.text
                 val detector = TextOffsetDetector(body)
                 try {
-                    val problems: MutableList<LinterProblem?> =
-                        run(commandBin, basePath, path, body)!!
+                    val problems: List<LinterProblem> =
+                        run(commandBin, basePath, path, body)
                     problems.forEach(
-                        Consumer { problem: LinterProblem? ->
-                            val offset = detector.getOffset(problem!!.lineno, problem.colno)
-                            var offsetEnd = offset + 1
-                            if (problem.linenoEnd != -1 && problem.colnoEnd != -1) {
-                                offsetEnd =
+                        Consumer { problem: LinterProblem ->
+                            val offset = detector.getOffset(problem.lineno, problem.colno)
+                            val offsetEnd =
+                                if (problem.linenoEnd != -1 && problem.colnoEnd != -1) {
                                     detector.getOffset(problem.linenoEnd, problem.colnoEnd) + 1
-                            }
-                            val range: TextRange? = TextRange(offset, offsetEnd)
-                            val msg: String =
-                                "[" + commandName + "] " + problem.message
+                                } else {
+                                    offset + 1
+                                }
                             holder.registerProblem(
                                 file,
-                                range,
-                                msg,
+                                TextRange(offset, offsetEnd),
+                                "[" + commandName + "] " + problem.message,
                             )
                         },
                     )
                 } catch (ex: IOException) {
-                    // LOG.error("flake8 execution error, ", ex);
+                    // nothing to do
                 }
             }
         }
@@ -78,16 +74,16 @@ abstract class AbstractPythonInspection : LocalInspectionTool() {
 
     @Throws(IOException::class)
     fun runLinter(
-        binPath: String?,
-        args: Array<String?>,
-        workingDir: String?,
+        binPath: String,
+        args: Array<String>,
+        workingDir: String,
         env: MutableMap<String?, String?>?,
         path: String,
         body: String?,
         outputPattern: Pattern,
-    ): MutableList<LinterProblem?> {
-        val cmd: Array<String?>? = arrayOf<String?>(binPath).plus(args)
-        val output = CommandUtil.runCommand(cmd!!, workingDir, env, body)
+    ): List<LinterProblem> {
+        val cmd: Array<String> = arrayOf<String>(binPath).plus(args)
+        val output = PythonCommandUtil.runCommand(cmd, workingDir, env, body)
         if (output == null) {
             return arrayListOf()
         }
@@ -100,22 +96,22 @@ abstract class AbstractPythonInspection : LocalInspectionTool() {
             val problemFile = createTargetByMatcher(m)
             if (problemFile != null && path != problemFile) return@map null
             createLinterProblemByMatcher(m)
-        }).filter(Objects::nonNull).toList()
+        }).filter(Objects::nonNull).toList().filterNotNull()
     }
 
     open fun createTargetByMatcher(matcher: Matcher): String? {
         return null
     }
 
-    abstract fun isEnabledByPyprojectToml(tomlBody: String?): Boolean
+    abstract fun isEnabledByPyprojectToml(tomlBody: String): Boolean
 
     @Throws(IOException::class)
     abstract fun run(
-        binPath: String?,
-        basePath: String?,
-        path: String?,
-        body: String?,
-    ): MutableList<LinterProblem?>?
+        binPath: String,
+        basePath: String,
+        path: String,
+        body: String,
+    ): List<LinterProblem>
 
     abstract fun createLinterProblemByMatcher(matcher: Matcher): LinterProblem?
 }

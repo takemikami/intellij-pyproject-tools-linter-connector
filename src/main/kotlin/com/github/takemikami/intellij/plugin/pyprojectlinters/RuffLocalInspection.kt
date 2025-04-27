@@ -16,27 +16,25 @@ class RuffLocalInspection : AbstractPythonInspection() {
         return buildPsiElementVisitorByCommand(holder, isOnTheFly, "ruff")
     }
 
-    override fun isEnabledByPyprojectToml(tomlBody: String?): Boolean {
-        return tomlBody!!.split("\n").stream()
+    override fun isEnabledByPyprojectToml(tomlBody: String): Boolean {
+        return tomlBody.split("\n").stream()
             .anyMatch { ln -> ln.trim().startsWith("[tool.ruff]") }
     }
 
-    companion object {
-        val OUTPUT_PATTERN: Pattern? =
-            Pattern.compile(
-                "([^:]*):([^:]*):([^:]*):\\s*(.*)",
-            )
-    }
+    val outputPattern: Pattern =
+        Pattern.compile(
+            "([^:]*):([^:]*):([^:]*):\\s*(.*)",
+        )
 
     override fun run(
-        binPath: String?,
-        basePath: String?,
-        path: String?,
-        body: String?,
-    ): MutableList<LinterProblem?>? {
+        binPath: String,
+        basePath: String,
+        path: String,
+        body: String,
+    ): List<LinterProblem> {
         return runLinter(
             binPath,
-            arrayOf<String?>(
+            arrayOf<String>(
                 "check",
                 "--output-format",
                 "concise",
@@ -44,18 +42,18 @@ class RuffLocalInspection : AbstractPythonInspection() {
             ),
             basePath,
             null,
-            path!!,
+            path,
             body,
-            OUTPUT_PATTERN!!,
+            outputPattern,
         )
     }
 
-    override fun createLinterProblemByMatcher(m: Matcher): LinterProblem? {
+    override fun createLinterProblemByMatcher(matcher: Matcher): LinterProblem? {
         return LinterProblem(
-            m.group(1),
-            m.group(2).toInt(),
-            m.group(3).toInt(),
-            m.group(4),
+            matcher.group(1),
+            matcher.group(2).toInt(),
+            matcher.group(3).toInt(),
+            matcher.group(4),
         )
     }
 }
