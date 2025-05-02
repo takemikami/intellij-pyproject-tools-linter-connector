@@ -34,6 +34,7 @@ class PythonCommandUtil {
             workingDir: String,
             env: MutableMap<String?, String?>?,
             stdin: String?,
+            checkExit: Boolean = false,
         ): String? {
             val pb = ProcessBuilder(*cmd)
             pb.directory(File(workingDir))
@@ -47,10 +48,15 @@ class PythonCommandUtil {
                 out.flush()
                 out.close()
             }
-            try {
-                p.waitFor()
-            } catch (ex: InterruptedException) {
-                return null
+            if (checkExit) {
+                try {
+                    val exitCode = p.waitFor()
+                    if (exitCode != 0) {
+                        return null
+                    }
+                } catch (ex: InterruptedException) {
+                    return null
+                }
             }
             val stderr = String(p.errorStream.readAllBytes(), StandardCharsets.UTF_8)
             return String(p.inputStream.readAllBytes(), StandardCharsets.UTF_8)
