@@ -30,7 +30,23 @@ Limitations:
 - run on Unix-based systems only. (not support windows)
 - run on local interpreter only. (not support remote interpreter)
 
-## Build and Installation
+## Installation
+
+1. Install a compatible JetBrains IDE, such as IntelliJ IDEA or PyCharm.
+2. Launch the IDE and open plugin settings.
+3. Search for `Pyproject Tools Linter/Formatter Connector` and click install
+
+## Settings
+
+1. Open setting, follow path:  
+   Settings -> Editor -> Inspections -> ExternalLinters -> Python
+2. Check or remove the following options.
+   - pyproject-flake8
+   - mypy
+   - Pylint
+   - ruff
+
+## Build
 
 Build plugin distribution.
 
@@ -44,13 +60,3 @@ Install plugin.
    Settings -> Plugins
 2. Select 'Install Plugin from Disk'
 4. Choice 'build/distributions/pyprojecttools_linterconnector-VERSION.zip'
-
-## Settings
-
-1. Open setting, follow path:  
-   Settings -> Editor -> Inspections -> ExternalLinters -> Python
-2. Check or remove the following options.
-   - pyproject-flake8
-   - mypy
-   - Pylint
-   - ruff
