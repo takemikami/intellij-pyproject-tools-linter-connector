@@ -14,5 +14,5 @@ repos:
       - id: ktlint
         name: ktlint
         language: system
-        entry: ./gradlew ktlintCheck
+        entry: ./gradlew ktlintCheck ktlintFormat
         pass_filenames: false
