@@ -1,11 +1,30 @@
 <idea-plugin>
   <id>com.github.takemikami.intellij-pyproject-tools-linter-connector</id>
   <name>Pyproject Tools Linter/Formatter Connector</name>
-  <vendor email="takeshi.mikami@gmail.com" url="https://takemikami.com/">Mikami, Takeshi</vendor>
+  <vendor email="takeshi.mikami@gmail.com" url="https://takemikami.com/">Takeshi Mikami</vendor>
 
   <description><![CDATA[
     Python external linter/formatter connector plugin for PyCharm and IntelliJ IDEA,
-    This plugin runs according to the `pyrproject.toml` file.
+    This plugin runs according to the `pyrproject.toml` file.<br><br>
+    This plugin is python external linter and formatter connector.
+    <ol>
+     <li>Connect external linters' output to IDE Inspections.
+     <li>Replace python source code to external formatters' output on save.
+     <li>You need to write linter/formatter configuration in `pyrproject.toml`
+    </ol>
+    Support for linters:
+    <ul>
+    </ul>
+     <li>pyproject-flake8
+     <li>mypy
+     <li>Pylint
+     <li>ruff
+    Support for formatters:
+    <ul>
+     <li>black
+     <li>isort
+     <li>ruff
+    </ul>
     ]]></description>
 
   <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
