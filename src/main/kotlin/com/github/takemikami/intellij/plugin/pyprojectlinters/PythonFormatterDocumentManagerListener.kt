@@ -61,13 +61,17 @@ class PythonFormatterDocumentManagerListener(private val project: Project) : Fil
                             PythonCommandUtil.Companion.getPythonCommandBin(sdk, formatter.commandName)
                         if (enableFormatter && commandBinFormatter != null) {
                             val cmd: Array<String> = arrayOf<String>(commandBinFormatter).plus(formatter.args)
-                            newBody =
+                            val formatted =
                                 PythonCommandUtil.runCommand(
                                     cmd,
                                     basePath,
                                     null,
                                     newBody,
+                                    true,
                                 )
+                            if (formatted != null) {
+                                newBody = formatted
+                            }
                         }
                     }
 
