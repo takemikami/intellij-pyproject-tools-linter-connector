@@ -2,6 +2,7 @@ package com.github.takemikami.intellij.plugin.pyprojectlinters
 
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
+import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.io.PrintWriter
@@ -39,7 +40,7 @@ class MypyLocalInspection : AbstractPythonInspection() {
     ): List<LinterProblem> {
         var tmp: Path? = null
         try {
-            tmp = Files.createTempFile(path.substring(0, path.length - 3), ".py")
+            tmp = Files.createTempFile(File(path).nameWithoutExtension, ".py")
             val pw: PrintWriter = PrintWriter(FileWriter(tmp.toFile()))
             pw.write(body)
             pw.flush()
