@@ -18,7 +18,7 @@ class RuffLocalInspection : AbstractPythonInspection() {
 
     override fun isEnabledByPyprojectToml(tomlBody: String): Boolean {
         return tomlBody.split("\n").stream()
-            .anyMatch { ln -> ln.trim().startsWith("[tool.ruff]") }
+            .anyMatch { ln -> ln.trim().startsWith("[tool.ruff.lint]") || ln.trim().startsWith("[tool.ruff.lint.") }
     }
 
     val outputPattern: Pattern =

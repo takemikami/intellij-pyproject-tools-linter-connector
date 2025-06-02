@@ -50,7 +50,8 @@ class PythonFormatterDocumentManagerListener(private val project: Project) : Fil
                     for (formatter in arrayOf<Formatter>(
                         Formatter("black", "[tool.black]", arrayOf<String>("-")),
                         Formatter("isort", "[tool.isort]", arrayOf<String>("-")),
-                        Formatter("ruff", "[tool.ruff]", arrayOf<String>("format", "-")),
+                        Formatter("ruff", "[tool.ruff.format]", arrayOf<String>("format", "-")),
+                        Formatter("ruff", "[tool.ruff.lint.isort]", arrayOf<String>("check", "--select", "I", "--fix", "-")),
                     )) {
                         val enableFormatter =
                             lines.stream()
